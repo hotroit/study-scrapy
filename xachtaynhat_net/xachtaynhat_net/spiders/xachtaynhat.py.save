@@ -1,0 +1,20 @@
+# -*- coding: utf-8 -*-
+import scrapy
+from xachtaynhat_net.items import XachtaynhatNetItem
+
+class XachtaynhatSpider(scrapy.Spider):
+    name = "xachtaynhat"
+    allowed_domains = ["xachtaynhat.net"]
+    start_urls = ['https://xachtaynhat.net/']
+
+    def parse(self, response):
+        links = response.css('.product').xpath('./a[1]/@href').extract()
+        titles = response.css('.product strong::text').extract()
+        prices = response.css('.product .price').xpath('.//span[1]/text()').extract()
+
+        for i in range(len(titles)):
+	    item = XachtaynhatNetItem()
+	    item["title"] = titles[i]
+	    item["product_link"] = links[i]
+	    item["price"]=prices[i]
+	    yield item
